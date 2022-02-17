@@ -10,6 +10,8 @@ import MapKit
 import CoreLocation
 import CoreData
 
+
+
 class MainViewController: UIViewController {
     
     @IBOutlet weak var nameText: UITextField!
@@ -19,23 +21,21 @@ class MainViewController: UIViewController {
     
     let locationManager = CLLocationManager()
     
-    var chosenLongitude = Double()
-    var chosenLatitude = Double()
+ //   var chosenLongitude = Double()
+  //  var chosenLatitude = Double()
     
-    var chosenId: UUID?
-    var chosenTitle = ""
+  //  var chosenId: UUID?
     
-    var annotationTitle = ""
-    var annotationSubtitle = ""
-    var annotationLongitude = Double()
-    var annotationLatitude = Double()
+    var singleton = UserSingleton.sharedInstance
+    
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         mapView.delegate = self
         locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest  // accuracy quality of location
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
         
@@ -61,14 +61,14 @@ class MainViewController: UIViewController {
     
     
     func showPin() {
-        if chosenTitle != "" {
+        if UserSingleton.sharedInstance.selectedTitle != "" {
             saveButtonOutlet.isHidden = true
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
             let contex = appDelegate.persistentContainer.viewContext
             
             let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Places")
             
-            let idString = chosenId?.uuidString
+            let idString = singleton.selectedId?.uuidString
             fetchRequest.predicate = NSPredicate(format: "id = %@", idString!)
             fetchRequest.returnsObjectsAsFaults = false
             
@@ -77,22 +77,22 @@ class MainViewController: UIViewController {
                 if results.count > 0 {
                     for result in results as! [NSManagedObject] {
                         if let title = result.value(forKey: "title") as? String{
-                            annotationTitle = title
+                            singleton.annotationTitle = title
                             if let subtitle = result.value(forKey: "subtitle") as? String{
-                                annotationSubtitle = subtitle
+                                singleton.annotationSubtitle = subtitle
                                 if let longitude = result.value(forKey: "longitude") as? Double{
-                                    annotationLongitude = longitude
+                                    singleton.annotationLongitude = longitude
                                     if let latitude = result.value(forKey: "latitude") as? Double{
-                                        annotationLatitude = latitude
+                                        singleton.annotationLatitude = latitude
                                         
                                         let annotation = MKPointAnnotation()
-                                        annotation.title = annotationTitle
-                                        annotation.subtitle = annotationSubtitle
-                                        let coordinate = CLLocationCoordinate2D(latitude: annotationLatitude, longitude: annotationLongitude)
+                                        annotation.title = singleton.selectedTitle
+                                        annotation.subtitle = singleton.annotationSubtitle
+                                        let coordinate = CLLocationCoordinate2D(latitude: singleton.annotationLatitude, longitude: singleton.annotationLongitude)
                                         annotation.coordinate = coordinate
                                         mapView.addAnnotation(annotation)
-                                        nameText.text = annotationTitle
-                                        commentText.text = annotationSubtitle
+                                        nameText.text = singleton.annotationTitle
+                                        commentText.text = singleton.annotationSubtitle
                                         
                                         locationManager.stopUpdatingLocation() // edirik ki işarətlədiyimiz yerdə map sabit qalsın, bizlə bərabər hərəkət etməsin
                                         let span = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
@@ -113,17 +113,28 @@ class MainViewController: UIViewController {
         }
     }
     
+    // 3. to reach contex and save user information to Core Data
     @IBAction func saveButtonPressed(_ sender: Any) {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let contex = appDelegate.persistentContainer.viewContext
         
         let newPlaces = NSEntityDescription.insertNewObject(forEntityName: "Places", into: contex)
         
+        // empty control
+        if nameText.text == "" || commentText.text == "" {
+            let alert = UIAlertController(title: "Error", message: "Please type someting", preferredStyle: UIAlertController.Style.alert)
+            let okButton = UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil)
+            alert.addAction(okButton)
+            present(alert, animated: true) {
+                return
+            }
+        }else {
         newPlaces.setValue(nameText.text, forKey: "title")
         newPlaces.setValue(commentText.text, forKey: "subtitle")
         newPlaces.setValue(UUID(), forKey: "id")
-        newPlaces.setValue(chosenLatitude, forKey: "latitude")
-        newPlaces.setValue(chosenLongitude, forKey: "longitude")
+            newPlaces.setValue(singleton.chosenLatitude, forKey: "latitude")
+            newPlaces.setValue(singleton.chosenLongitude, forKey: "longitude")
+        }
         
         do{
             try contex.save()
@@ -141,12 +152,13 @@ class MainViewController: UIViewController {
 //MARK: - MKMapViewDelegate, CLLocationManagerDelegate
 extension MainViewController: MKMapViewDelegate, CLLocationManagerDelegate {
     
+    //  updated location of user. 1.
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if chosenTitle == "" {
+        if singleton.selectedTitle == "" {
             let location = CLLocationCoordinate2D(latitude: locations[0].coordinate.latitude, longitude: locations[0].coordinate.longitude)
-            let span = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)  // zoom`lamaq
+            let span = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)  // zooming
             let region = MKCoordinateRegion(center: location, span: span)
-            mapView.setRegion(region, animated: true)
+            mapView.setRegion(region, animated: true) // to reach the region we had to reach
         }else{
             //
         }
@@ -176,36 +188,34 @@ extension MainViewController: MKMapViewDelegate, CLLocationManagerDelegate {
     }
     
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-        if chosenTitle != "" {
-        let geoLocation = CLLocation(latitude: annotationLatitude, longitude: annotationLongitude)
+        if singleton.selectedTitle != "" {
+            let geoLocation = CLLocation(latitude: singleton.annotationLatitude, longitude: singleton.annotationLongitude)
         
         CLGeocoder().reverseGeocodeLocation(geoLocation) { placemarks, error in
             if let placemarkz = placemarks{ // optional olduğu üçün kontrol
                 if placemarkz.count > 0 {  // əlavə kontrol
                     let newPlacemark = MKPlacemark(placemark: placemarkz[0])
                     let item = MKMapItem(placemark: newPlacemark)
-                    item.name = self.annotationTitle
+                    item.name = self.singleton.annotationTitle
                     
                     let launchOptions = [MKLaunchOptionsDirectionsModeKey:MKLaunchOptionsDirectionsModeDriving]
                     item.openInMaps(launchOptions: launchOptions)
-        
-
-                    
                 }
             }
         }
         }
     }
     
+    // 2.
     @objc func chooseLocation(gestureRecognizer:UILongPressGestureRecognizer){
         
         if gestureRecognizer.state == .began {
             let touchedPoint = gestureRecognizer.location(in: self.mapView)
             let touchedCoordinate =  mapView.convert(touchedPoint, toCoordinateFrom: self.mapView)
-            chosenLatitude = touchedCoordinate.latitude
-            chosenLongitude = touchedCoordinate.longitude
+            singleton.chosenLatitude = touchedCoordinate.latitude
+            singleton.chosenLongitude = touchedCoordinate.longitude
             
-            let annotation = MKPointAnnotation()
+            let annotation = MKPointAnnotation()   // pinning
             
             annotation.coordinate = touchedCoordinate.self
             annotation.title = nameText.text
@@ -215,6 +225,7 @@ extension MainViewController: MKMapViewDelegate, CLLocationManagerDelegate {
     }
 }
 
+//MARK: - UITextFieldDelegate
 extension MainViewController: UITextFieldDelegate {
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

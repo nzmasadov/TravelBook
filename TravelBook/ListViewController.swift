@@ -8,15 +8,13 @@
 import UIKit
 import CoreData
 
-class FirstViewController: UIViewController, UITableViewDelegate, UITableViewDataSource  {
+
+class ListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource  {
+    
+    let singleton = UserSingleton.sharedInstance
     
     @IBOutlet weak var tableView: UITableView!
-    var titleArray = [String]()
-    var idArray = [UUID]()
-    
-    
-    var selectedId: UUID?
-    var selectedTitle = ""
+  //  var selectedId: UUID?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,8 +35,8 @@ class FirstViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     @objc func getData() {
         
-        idArray.removeAll(keepingCapacity: false)
-        titleArray.removeAll(keepingCapacity: false)
+        singleton.idArray.removeAll(keepingCapacity: false)
+        singleton.titleArray.removeAll(keepingCapacity: false)
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let contex = appDelegate.persistentContainer.viewContext
         
@@ -49,10 +47,10 @@ class FirstViewController: UIViewController, UITableViewDelegate, UITableViewDat
             if results.count > 0 {
                 for result in results as! [NSManagedObject] {
                     if let title = result.value(forKey: "title") as? String{
-                        titleArray.append(title)
+                        singleton.titleArray.append(title)
                     }
                     if let id = result.value(forKey: "id") as? UUID {
-                        idArray.append(id)
+                        singleton.idArray.append(id)
                     }
                     tableView.reloadData()
                 }
@@ -63,10 +61,12 @@ class FirstViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     @objc func addButton() {
-        selectedTitle = ""
+        singleton.selectedTitle = ""
         performSegue(withIdentifier: "toMainVC", sender: nil)
     }
     
+    
+    //
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -75,7 +75,7 @@ class FirstViewController: UIViewController, UITableViewDelegate, UITableViewDat
             let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Places")
             fetchRequest.returnsObjectsAsFaults = false
             
-            let idString = idArray[indexPath.row].uuidString
+            let idString = singleton.idArray[indexPath.row].uuidString
             fetchRequest.predicate = NSPredicate(format: "id = %@", idString)
             
             do{
@@ -83,10 +83,10 @@ class FirstViewController: UIViewController, UITableViewDelegate, UITableViewDat
                 if results.count > 0 {
                     for result in results as! [NSManagedObject] {
                         if let id = result.value(forKey: "id") as? UUID{
-                            if id == idArray[indexPath.row] {
+                            if id == singleton.idArray[indexPath.row] {
                                 contex.delete(result)
-                                idArray.remove(at: indexPath.row)
-                                titleArray.remove(at: indexPath.row)
+                                singleton.idArray.remove(at: indexPath.row)
+                                singleton.titleArray.remove(at: indexPath.row)
                                 self.tableView.reloadData()
                                 do{
                                     try contex.save()
@@ -106,24 +106,23 @@ class FirstViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell()
-        cell.textLabel?.text = titleArray[indexPath.row]
+        cell.textLabel?.text = singleton.titleArray[indexPath.row]
         return cell
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return titleArray.count
+        return singleton.titleArray.count
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        selectedId = idArray[indexPath.row]
-        selectedTitle = titleArray[indexPath.row]
+        singleton.selectedId = singleton.idArray[indexPath.row]
+        singleton.selectedTitle = singleton.titleArray[indexPath.row]
         performSegue(withIdentifier: "toMainVC", sender: self)
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "toMainVC"{
-            let detailedVC = segue.destination as! MainViewController
-            detailedVC.chosenId = selectedId
-            detailedVC.chosenTitle = selectedTitle
-        }
-    }
+//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+//        if segue.identifier == "toMainVC"{
+//            let detailedVC = segue.destination as! MainViewController
+//            detailedVC.chosenId = selectedId
+//        }
+//    }
 }

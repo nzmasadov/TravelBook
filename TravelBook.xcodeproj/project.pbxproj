@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BF75FCCC27BEA6BD000A7D28 /* UserSingleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF75FCCB27BEA6BD000A7D28 /* UserSingleton.swift */; };
 		BFB44844279FFCF10035E651 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB44843279FFCF10035E651 /* AppDelegate.swift */; };
 		BFB44846279FFCF10035E651 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB44845279FFCF10035E651 /* SceneDelegate.swift */; };
 		BFB44848279FFCF10035E651 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB44847279FFCF10035E651 /* MainViewController.swift */; };
@@ -14,10 +15,11 @@
 		BFB4484E279FFCF10035E651 /* A_S_TravelBook.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = BFB4484C279FFCF10035E651 /* A_S_TravelBook.xcdatamodeld */; };
 		BFB44850279FFCF20035E651 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BFB4484F279FFCF20035E651 /* Assets.xcassets */; };
 		BFB44853279FFCF20035E651 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BFB44851279FFCF20035E651 /* LaunchScreen.storyboard */; };
-		BFB4485B27A046600035E651 /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB4485A27A046600035E651 /* FirstViewController.swift */; };
+		BFB4485B27A046600035E651 /* ListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB4485A27A046600035E651 /* ListViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		BF75FCCB27BEA6BD000A7D28 /* UserSingleton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSingleton.swift; sourceTree = "<group>"; };
 		BFB44840279FFCF10035E651 /* TravelBook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TravelBook.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BFB44843279FFCF10035E651 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BFB44845279FFCF10035E651 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -27,7 +29,7 @@
 		BFB4484F279FFCF20035E651 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BFB44852279FFCF20035E651 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		BFB44854279FFCF20035E651 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		BFB4485A27A046600035E651 /* FirstViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
+		BFB4485A27A046600035E651 /* ListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,7 +64,8 @@
 			children = (
 				BFB44843279FFCF10035E651 /* AppDelegate.swift */,
 				BFB44845279FFCF10035E651 /* SceneDelegate.swift */,
-				BFB4485A27A046600035E651 /* FirstViewController.swift */,
+				BF75FCCB27BEA6BD000A7D28 /* UserSingleton.swift */,
+				BFB4485A27A046600035E651 /* ListViewController.swift */,
 				BFB44847279FFCF10035E651 /* MainViewController.swift */,
 				BFB44849279FFCF10035E651 /* Main.storyboard */,
 				BFB4484F279FFCF20035E651 /* Assets.xcassets */,
@@ -144,10 +147,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BFB4485B27A046600035E651 /* FirstViewController.swift in Sources */,
+				BFB4485B27A046600035E651 /* ListViewController.swift in Sources */,
 				BFB44848279FFCF10035E651 /* MainViewController.swift in Sources */,
 				BFB44844279FFCF10035E651 /* AppDelegate.swift in Sources */,
 				BFB4484E279FFCF10035E651 /* A_S_TravelBook.xcdatamodeld in Sources */,
+				BF75FCCC27BEA6BD000A7D28 /* UserSingleton.swift in Sources */,
 				BFB44846279FFCF10035E651 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -306,7 +310,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -336,7 +340,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
